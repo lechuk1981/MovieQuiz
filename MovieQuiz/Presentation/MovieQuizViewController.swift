@@ -70,3 +70,5 @@ final class MovieQuizViewController: UIViewController {
  Вопрос: Рейтинг этого фильма больше чем 6?
  Ответ: НЕТ
 */
+
+
