@@ -3,23 +3,23 @@ import UIKit
 final class MovieQuizViewController: UIViewController {
     
     
-    @IBOutlet weak var textLabel: UILabel!
+    @IBOutlet weak private var textLabel: UILabel!
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet private var counterLabel: UILabel!
     
-    struct QuizQuestion {
+    private struct QuizQuestion {
         let image: String
         let text: String
         let correctAnswer: Bool
     }
     
-    struct QuizStepViewModel {
+    private struct QuizStepViewModel {
         let image: UIImage
         let question: String
         let questionNumber: String
     }
     
-    struct QuizResultsViewModel {
+    private struct QuizResultsViewModel {
         let title: String
         let text: String
         let buttonText: String
@@ -44,19 +44,14 @@ final class MovieQuizViewController: UIViewController {
     private var currentQuestionIndex = 0
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        
-        let currentQuestion = questions[currentQuestionIndex]
-        let givenAnswer = true
-        
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+       let currentQuestion = questions[currentQuestionIndex]
+       showAnswerResult(isCorrect: currentQuestion.correctAnswer)
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
         
         let currentQuestion = questions[currentQuestionIndex]
-        let givenAnswer = false
-        
-        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        showAnswerResult(isCorrect: !currentQuestion.correctAnswer)
         
     }
     
@@ -70,13 +65,14 @@ final class MovieQuizViewController: UIViewController {
         
         let action = UIAlertAction(
             title: result.buttonText,
-            style: .default) { _ in
-                self.currentQuestionIndex = 0
-                self.correctAnswers = 0
+            style: .default) { [weak self] _ in
+                self!.currentQuestionIndex = 0
+                self!.correctAnswers = 0
                 
-                let firstQuestion = self.questions[self.currentQuestionIndex]
-                let viewModel = self.convert(model: firstQuestion)
-                self.show(quiz: viewModel)
+                let firstQuestion = self!.questions[self!.currentQuestionIndex]
+                let viewModel =  self!.convert(model: firstQuestion )
+                
+                self!.show(quiz: viewModel)
             }
         alert.addAction(action)
         present(alert, animated: true)
@@ -116,8 +112,8 @@ final class MovieQuizViewController: UIViewController {
     private func showAnswerResult(isCorrect: Bool) {
         
         if isCorrect {
-                    correctAnswers += 1
-                }
+            correctAnswers += 1
+        }
         
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
