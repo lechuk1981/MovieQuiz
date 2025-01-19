@@ -1,16 +1,9 @@
 import Foundation
 
-class QuestionFactory: QuestionFactoryProtocol {
-    
+final class QuestionFactory: QuestionFactoryProtocol {
     
     weak var delegate: QuestionFactoryDelegate?
-    
-//    func setup(delegate: QuestionFactoryDelegate) {
-//        self.delegate = delegate
-//    }
-    
-    
-    
+      
     private let questions: [QuizQuestion] = [
         .init(image: "The Godfather", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
         .init(image: "The Dark Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),

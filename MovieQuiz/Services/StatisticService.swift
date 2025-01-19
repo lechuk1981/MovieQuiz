@@ -15,38 +15,38 @@ final class StatisticServiceImplementation: StatisticService {
     }
     var totalAccuracy: Double {
         get {
-            userDefaults.double(forKey: Keys.total.rawValue)
+            userDefaults.double(forKey: "totalAccuracy")
         }
         set {
-            userDefaults.set(newValue, forKey: Keys.total.rawValue)
+            userDefaults.set(newValue, forKey: "totalAccuracy")
         }
+        
     }
     
     var gamesCount: Int {
         get {
-            return userDefaults.integer(forKey: Keys.gamesCount.rawValue)
+            userDefaults.integer(forKey: "gamesCount")
         }
         set {
-            userDefaults.set(newValue, forKey: Keys.gamesCount.rawValue)
+            userDefaults.set(newValue, forKey: "gamesCount")
         }
+        
     }
     
     var bestGame: GameRecord {
         get {
-            guard let data = userDefaults.data(forKey: Keys.bestGame.rawValue),
-                  let record = try? JSONDecoder().decode(GameRecord.self, from: data) else {
-                return .init(correct: 0, total: 0, date: Date())
-            }
-            return record
+            let correctCount = userDefaults.integer(forKey: "correct")
+            let totalCount = userDefaults.integer(forKey: "total")
+            let date = userDefaults.object(forKey: "date") as? Date ?? Date()
+            return GameRecord(correct: correctCount, total: totalCount, date: date)
         }
         set {
-            guard let data = try? JSONEncoder().encode(newValue) else {
-                print("Невозможно сохранить результат")
-                return
-            }
-            userDefaults.set(data, forKey: Keys.bestGame.rawValue)
+            userDefaults.set(newValue.correct, forKey: "correct")
+            userDefaults.set(newValue.total, forKey: "total")
+            userDefaults.set(newValue.date, forKey: "date")
         }
     }
+    
     func store(correct count: Int, total amount: Int) {
         let newRecord = GameRecord(correct: count, total: amount, date: Date())
         if newRecord.isBetterThan(bestGame) {

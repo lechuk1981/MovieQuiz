@@ -1,6 +1,8 @@
 import UIKit
 
-final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, AlertPresenterDelegate {
+final class MovieQuizViewController: UIViewController,
+                                     QuestionFactoryDelegate,
+                                     AlertPresenterDelegate {
     
     private let questionsAmount: Int = 10
     private var questionFactory: QuestionFactoryProtocol = QuestionFactory()
@@ -11,34 +13,29 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     private var currentQuestionIndex = 0
     
     @IBOutlet weak private var textLabel: UILabel!
-    @IBOutlet private var imageView: UIImageView!
-    @IBOutlet private var counterLabel: UILabel!
+    @IBOutlet weak private var imageView: UIImageView!
+    @IBOutlet weak private var counterLabel: UILabel!
     @IBOutlet weak var noButton: UIButton!
     @IBOutlet weak var yesButton: UIButton!
     
-    
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
+        guard let currentQuestion else { return }
         showAnswerResult(isCorrect: currentQuestion.correctAnswer)
-        sender.isEnabled = false
+        changeStateButton(isEnabled: false)
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        
-        guard let currentQuestion = currentQuestion else {
-            return
-        }
+        guard let currentQuestion else { return }
         showAnswerResult(isCorrect: !currentQuestion.correctAnswer)
-        sender.isEnabled = false
-        
+        changeStateButton(isEnabled: false)
     }
     
+    private func changeStateButton(isEnabled: Bool) {
+        noButton.isEnabled = isEnabled
+        yesButton.isEnabled = isEnabled
+    }
     
     private func show(quiz viewModel: QuizResultsViewModel) {
-        
-        
         let alertModel = AlertModel(
             title: viewModel.title,
             message: viewModel.text,
@@ -49,15 +46,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
                 self.currentQuestionIndex = 0
                 self.correctAnswers = 0
                 self.questionFactory.requestNextQuestion()
-                
             }
         )
+        changeStateButton(isEnabled: true)
         alertPresenter.show(alertModel: alertModel)
     }
     
-    
     override func viewDidLoad() {
-        
         super.viewDidLoad()
         questionFactory.delegate = self
         questionFactory.requestNextQuestion()
@@ -67,13 +62,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     // MARK: - QuestionFactoryDelegate
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else {
-            return
-        }
+        guard let question = question else {return}
         
         currentQuestion = question
         let viewModel = convert(model: question)
-        
         DispatchQueue.main.async { [weak self] in
             self?.show(quiz: viewModel)
         }
@@ -84,20 +76,16 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         self.present(alert, animated: true)
     }
     
-    
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        
         let quizStepViewModel = QuizStepViewModel(
             image: UIImage(named: model.image) ?? UIImage(),
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
         
-        
         return quizStepViewModel
     }
     
     private func show(quiz step: QuizStepViewModel) {
-        
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
@@ -105,11 +93,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     private func showAnswerResult(isCorrect: Bool) {
-        
         if isCorrect {
             correctAnswers += 1
         }
-        
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
@@ -122,7 +108,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     }
     
     private func showNextQuestionOrResults() {
-        
         imageView.layer.borderColor = UIColor.ypBlack.cgColor
         
         if currentQuestionIndex == questionsAmount - 1 {
