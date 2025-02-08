@@ -15,7 +15,7 @@ final class MovieQuizUITests: XCTestCase {
         app.launch()
         continueAfterFailure = false
     }
-
+    
     override func tearDownWithError() throws {
         app.terminate()
         app = nil
@@ -26,10 +26,16 @@ final class MovieQuizUITests: XCTestCase {
         let firstPoster = app.images["Poster"]
         let firstPosterData = firstPoster.screenshot().pngRepresentation
         app.buttons["Yes"].tap()
+        
         sleep(3)
         let secondPoster = app.images["Poster"]
         let secondPosterData = secondPoster.screenshot().pngRepresentation
         XCTAssertNotEqual(firstPosterData, secondPosterData)
+        
+        let indexLabel = app.staticTexts["Index"]
+        
+        XCTAssertNotEqual(firstPosterData, secondPosterData)
+        XCTAssertEqual(indexLabel.label, "2/10")
     }
     
     func testNoButton() {
@@ -37,10 +43,27 @@ final class MovieQuizUITests: XCTestCase {
         let firstPoster = app.images["Poster"]
         let firstPosterData = firstPoster.screenshot().pngRepresentation
         app.buttons["No"].tap()
+        
         sleep(3)
         let secondPoster = app.images["Poster"]
         let secondPosterData = secondPoster.screenshot().pngRepresentation
         XCTAssertNotEqual(firstPosterData, secondPosterData)
+        let indexLabel = app.staticTexts["Index"]
+        
+        XCTAssertNotEqual(firstPosterData, secondPosterData)
+        XCTAssertEqual(indexLabel.label, "2/10")
+    }
+    
+    func testsAlert() {
+        sleep(2)
+        for _ in 0..<10{
+            sleep(2)
+            app.buttons["No"].tap()
+        }
+        let alert = app.alerts["Этот раунд окончен"]
+        XCTAssertNotNil(alert.exists)
+        XCTAssertEqual(alert.label, "Этот раунд окончен")
+        XCTAssertNotNil(alert.buttons.firstMatch.label, "Сыграть еще раз")
     }
     
     @MainActor
@@ -48,7 +71,7 @@ final class MovieQuizUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
     }
-
+    
     @MainActor
     func testLaunchPerformance() throws {
         if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
