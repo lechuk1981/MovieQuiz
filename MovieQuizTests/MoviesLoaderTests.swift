@@ -13,11 +13,11 @@ import XCTest
 final class MoviesLoaderTests: XCTestCase {
     struct StubNetworkClient: NetworkRouting {
         
-        enum TestError: Error { // тестовая ошибка
+        enum TestError: Error {
             case test
         }
         
-        let emulateError: Bool // этот параметр нужен, чтобы заглушка эмулировала либо ошибку сети, либо успешный ответ
+        let emulateError: Bool 
         
         func fetch(url: URL, handler: @escaping (Result<Data, Error>) -> Void) {
             if emulateError {

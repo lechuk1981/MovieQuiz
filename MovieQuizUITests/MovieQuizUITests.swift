@@ -6,6 +6,7 @@
 //
 import Foundation
 import XCTest
+@testable import MovieQuiz
 
 final class MovieQuizUITests: XCTestCase {
     var app: XCUIApplication!
@@ -30,8 +31,6 @@ final class MovieQuizUITests: XCTestCase {
         sleep(3)
         let secondPoster = app.images["Poster"]
         let secondPosterData = secondPoster.screenshot().pngRepresentation
-        XCTAssertNotEqual(firstPosterData, secondPosterData)
-        
         let indexLabel = app.staticTexts["Index"]
         
         XCTAssertNotEqual(firstPosterData, secondPosterData)
@@ -47,7 +46,6 @@ final class MovieQuizUITests: XCTestCase {
         sleep(3)
         let secondPoster = app.images["Poster"]
         let secondPosterData = secondPoster.screenshot().pngRepresentation
-        XCTAssertNotEqual(firstPosterData, secondPosterData)
         let indexLabel = app.staticTexts["Index"]
         
         XCTAssertNotEqual(firstPosterData, secondPosterData)
@@ -66,19 +64,19 @@ final class MovieQuizUITests: XCTestCase {
         XCTAssertNotNil(alert.buttons.firstMatch.label, "Сыграть еще раз")
     }
     
-    @MainActor
-    func testExample() throws {
-        let app = XCUIApplication()
-        app.launch()
-    }
-    
-    @MainActor
-    func testLaunchPerformance() throws {
-        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
-            // This measures how long it takes to launch your application.
-            measure(metrics: [XCTApplicationLaunchMetric()]) {
-                XCUIApplication().launch()
-            }
-        }
-    }
+    func testAlertClose() {
+           sleep(2)
+           for _ in 1...10 {
+               app.buttons["No"].tap()
+               sleep(2)
+           }
+           let alert = app.alerts["Этот раунд окончен"]
+           sleep(2)
+           XCTAssertNotNil(alert.exists)
+           app.alerts.buttons.firstMatch.tap()
+           sleep(2)
+           XCTAssertFalse(alert.exists)
+           let textLabel = app.staticTexts["Index"].label
+           XCTAssertEqual(textLabel, "1/10")
+       }
 }
